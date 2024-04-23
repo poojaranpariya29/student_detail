@@ -20,6 +20,7 @@ class _AddDataState extends State<AddData> {
   TextEditingController StdController = TextEditingController();
 
   String? image;
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +83,12 @@ class _AddDataState extends State<AddData> {
               ),
               TextFormField(
                 controller: GridController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter GR Id';
+                  }
+                  return null;
+                },
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(border: OutlineInputBorder()),
               ),
@@ -94,6 +101,12 @@ class _AddDataState extends State<AddData> {
               ),
               TextFormField(
                 controller: NameController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter student name';
+                  }
+                  return null;
+                },
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(border: OutlineInputBorder()),
               ),
@@ -106,6 +119,12 @@ class _AddDataState extends State<AddData> {
               ),
               TextFormField(
                 controller: StdController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter Standard';
+                  }
+                  return null;
+                },
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(border: OutlineInputBorder()),
               ),
@@ -135,6 +154,14 @@ class _AddDataState extends State<AddData> {
                   child: Text("SUBMIT"),
                 ),
               ),
+              Center(
+                child: ElevatedButton(
+                    onPressed: () {
+                      studentList.clear();
+                      setState(() {});
+                    },
+                    child: Text("DELETE")),
+              )
             ],
           ),
         ));

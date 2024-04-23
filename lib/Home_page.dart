@@ -1,9 +1,11 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student_detail/utill.dart';
+import 'package:flutter/src/painting/image_provider.dart';
 
 import 'Add_Data_Page.dart';
 
@@ -13,6 +15,8 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
+GlobalKey globalKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   @override
@@ -47,9 +51,29 @@ class _HomePageState extends State<HomePage> {
                 ));
                 setState(() {});
               },
-              leading: CircleAvatar(
-                radius: 30,
-                backgroundImage: FileImage(File(user.image ?? "")),
+              leading: InkWell(
+                onTap: () {
+                  onPressed:
+                  () async {
+                    RenderRepaintBoundary rrb = globalKey.currentContext
+                        ?.findRenderObject() as RenderRepaintBoundary;
+                    var pic = await rrb.toImage();
+                    var pngImg =
+                        await pic.toByteData(format: ImageByteFormat.png);
+                    Uint8List? asUint8List = pngImg?.buffer.asUint8List();
+
+                    print("asUint8List $asUint8List");
+                    savedImg = asUint8List;
+                    Navigator.pushNamed(context, "save");
+                  };
+                },
+                child: RepaintBoundary(
+                  key: globalKey,
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: FileImage(File(user.image ?? "")),
+                  ),
+                ),
               ),
               title: Column(
                 children: [
@@ -106,7 +130,6 @@ class _HomePageState extends State<HomePage> {
           print("Back to home");
           setState(() {});
         },
-        tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_detail/save_file.dart';
 import 'Add_Data_Page.dart';
 import 'Home_page.dart';
 
@@ -22,6 +23,7 @@ class _MyappState extends State<Myapp> {
       routes: {
         "/": (context) => HomePage(),
         "adddata": (context) => AddData(),
+        "save": (context) => SaveImage(),
       },
     );
   }
