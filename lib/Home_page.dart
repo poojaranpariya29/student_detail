@@ -1,163 +1,137 @@
 import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'Add_data_page.dart';
+import 'package:student_detail/utill.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController grid = TextEditingController();
-  TextEditingController name = TextEditingController();
-  TextEditingController standard = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff5D39AF),
         centerTitle: true,
         title: Text(
-          "DETAIL",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          "Home Page",
+          style: TextStyle(color: Colors.white),
         ),
-        actions: [
-          InkWell(
-              onTap: () {
-                setState(() {});
-              },
-              child: Icon(
-                Icons.refresh,
-                color: Colors.white,
-              )),
-          SizedBox(
-            width: 10,
-          )
-        ],
+        backgroundColor: Color(0xff5D39AF),
       ),
-      body: ListView.builder(
-        itemCount: Global.g1.studentList.length,
-        itemBuilder: (context, index) {
-          return Container(
-              margin: EdgeInsets.all(10),
-              padding: EdgeInsets.all(10),
-              height: MediaQuery.of(context).size.height * 0.15,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xffBDADE3),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 5,
-                      ),
-                      CircleAvatar(
-                        radius: 35,
-                        backgroundImage: FileImage(
-                          File("${Global.g1.studentList[index]["image"]}"),
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            "GR ID: ${Global.g1.studentList[index]["grid"]}",
-                          ),
-                          Text(
-                            "NAME: ${Global.g1.studentList[index]["name"]}",
-                          ),
-                          Text(
-                            " STANDARD: ${Global.g1.studentList[index]["standard"]}",
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Container(
-                                      color: Color(0xff5D39AF),
-                                      child: Text(
-                                        "Update:",
-                                        style: TextStyle(
-                                            fontSize: 15, color: Colors.white),
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextFormField(
-                                        controller: grid,
-                                        decoration: InputDecoration(
-                                          hintText: "grid:",
-                                        ),
-                                      ),
-                                      TextFormField(
-                                          controller: name,
-                                          decoration: InputDecoration(
-                                              hintText: "name:")),
-                                      TextFormField(
-                                          controller: standard,
-                                          decoration: InputDecoration(
-                                              hintText: "standard:")),
-                                      SizedBox(height: 10),
-                                      Center(
-                                        child: ElevatedButton(
-                                            onPressed: () {
-                                              Map m1 = {
-                                                "grid": grid.text,
-                                                "name": name.text,
-                                                "standard": standard.text,
-                                              };
-                                              Global.g1.studentList.add(m1);
-                                              Navigator.pop(context, [
-                                                grid.text,
-                                                name.text,
-                                                standard.text,
-                                              ]);
-                                            },
-                                            child: Text("UPDATE")),
-                                      ),
-                                      Center(
-                                        child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("CANCEL")),
-                                      )
-                                    ],
-                                  );
-                                });
-                          },
-                          icon: const Icon(Icons.edit)),
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              Global.g1.studentList
-                                  .remove(Global.g1.studentList[index]);
-                            });
-                          },
-                          icon: const Icon(Icons.delete)),
-                    ],
-                  ),
-                ],
-              ));
+      body: InkWell(
+        onTap: () {
+          // Navigator.pushNamed(context, 'DetailsPage');
+          Navigator.pushNamed(context, "adddata", arguments: studentData);
         },
+        child: ListView.builder(
+          itemCount: studentList.length,
+          itemBuilder: (context, index) {
+            StudentData student = studentList[index];
+            return Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: FileImage(File(student.xFILE ?? "")),
+                ),
+                title: Text('Name: ${student.name}'),
+                subtitle: Text('GR-ID: ${student.grid} | Std: ${student.std}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _showDialog(context, index);
+                      },
+                      icon: Icon(Icons.edit),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        studentList.removeAt(index);
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, "adddata");
-
-          setState(() {});
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, 'adddata');
+          if (result != null && result is StudentData) {
+            setState(() {
+              studentList.add(result);
+            });
+          }
         },
         child: Icon(Icons.add),
+        backgroundColor: Color(0xff5D39AF),
+        foregroundColor: Colors.white,
+        shape: CircleBorder(),
       ),
+    );
+  }
+
+  void _showDialog(BuildContext context, int index) {
+    TextEditingController studentNameController =
+        TextEditingController(text: studentList[index].name);
+    TextEditingController studentGridController =
+        TextEditingController(text: studentList[index].grid);
+    TextEditingController studentStdController =
+        TextEditingController(text: studentList[index].std);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(child: Text("Edit Student Profile")),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: studentNameController,
+                  decoration: InputDecoration(labelText: 'Name'),
+                ),
+                TextField(
+                  controller: studentGridController,
+                  decoration: InputDecoration(labelText: 'GR-ID'),
+                ),
+                TextField(
+                  controller: studentStdController,
+                  decoration: InputDecoration(labelText: 'Std'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  studentList[index].name = studentNameController.text;
+                  studentList[index].grid = studentGridController.text;
+                  studentList[index].std = studentStdController.text;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
