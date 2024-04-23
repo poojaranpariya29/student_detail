@@ -21,6 +21,18 @@ class _AddDataState extends State<AddData> {
 
   String? image;
   @override
+  void initState() {
+    super.initState();
+    if (widget.studentindex != null) {
+      NameController.text = studentList[widget.studentindex!].name ?? "";
+      GridController.text = studentList[widget.studentindex!].grid ?? "";
+      StdController.text = studentList[widget.studentindex!].std ?? "";
+
+      image = studentList[widget.studentindex!].image ?? "";
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
