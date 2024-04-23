@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:student_detail/modalclass.dart';
 import 'package:student_detail/utill.dart';
 
+import 'Add_Data_Page.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -31,28 +33,56 @@ class _HomePageState extends State<HomePage> {
         child: ListView.builder(
           itemCount: studentList.length,
           itemBuilder: (context, index) {
-            StudentModel student = studentList[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: FileImage(File(student.image ?? "")),
-              ),
-              title: Text('Name: ${student.name}'),
-              subtitle: Text('GR-ID: ${student.grid} | Std: ${student.std}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.edit),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      studentList.removeAt(index);
-                      setState(() {});
-                    },
-                    icon: Icon(Icons.delete),
-                  ),
-                ],
+            var user = studentList[index];
+            return Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
+              height: 100,
+              decoration: BoxDecoration(color: Color(0XFFBDADE3)),
+              width: double.infinity,
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: FileImage(File(user.image ?? "")),
+                ),
+                title: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text("Name:"),
+                        Text(user.name ?? ""),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text("GrId:"),
+                        Text(user.grid ?? ""),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text("Std:"),
+                        Text(user.std ?? ""),
+                      ],
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.edit),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        studentList.removeAt(index);
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -60,17 +90,17 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.pushNamed(context, 'adddata');
-          if (result != null && result is StudentModel) {
-            setState(() {
-              studentList.add(result);
-            });
-          }
+          print("goto detail");
+          await Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return AddData();
+            },
+          ));
+          print("Back to home");
+          setState(() {});
         },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xff5D39AF),
-        foregroundColor: Colors.white,
-        shape: CircleBorder(),
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
       ),
     );
   }
